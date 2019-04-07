@@ -10,6 +10,7 @@ class ShoppingCartTest {
 
     @Test
     void testAddItem() {
+
     }
 
     @Test
@@ -18,12 +19,12 @@ class ShoppingCartTest {
 
     @Test
     void testGetItemCount() {
-       assertEquals(cart.getItemCount(), 0);
+       assertEquals(0, cart.getItemCount());
     }
 
     @Test
     void testEmpty() {
         cart.empty();
-        assertEquals(cart.getItemCount(), 0);
+        assertEquals(0, cart.getItemCount());
     }
 }
