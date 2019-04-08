@@ -28,14 +28,24 @@ class ShoppingCartTest {
         cart.addItem(first);
         assertEquals(1, cart.getItemCount());
 
-        card.addItem(second);
+        cart.addItem(second);
         assertEquals(2, cart.getItemCount());
 
         cart.empty();
     }
 
+    // italo zevallos
     @Test
     void testRemoveItem() {
+        cart.addItem(first);
+        int numItems = cart.getItemCount();
+        try{
+            cart.removeItem(first);
+        }
+        catch(Exception e){
+            fail();
+        }
+        assertEquals(numItems-1, cart.getItemCount());
     }
 
     // shannen barrameda
