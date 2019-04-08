@@ -48,6 +48,12 @@ class ShoppingCartTest {
         assertEquals(numItems-1, cart.getItemCount());
     }
 
+    // matthew kunjummen
+    @Test
+    void testRemoveAbsentItem() {
+        assertThrows(ProductNotFoundException.class, () -> cart.removeItem(new Product("Fake", -0.0)));
+    }
+
     // shannen barrameda
     @Test
     void testGetItemCount() {
