@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 
+
+//GUI should create an instance of NetworkHost, and hen call startHost() to get things rolling
+//GUI should call shutdown() to stop
 public class NetworkHost extends Thread{
 
 	ClientList clients;//ArrayList of clients, ClientList extends ArrayList<Client>
@@ -142,5 +145,17 @@ public class NetworkHost extends Thread{
 		return message;
 	}
 	
+	//closes the server and all client connections
+	void shutdown() {
+		state = "Shutdown";
+		for(Client client:clients) {//for each client
+			try{
+				client.socket.close();//close each client
+			}catch (IOException e){}
+		}
+		try{
+			serverSocket.close();
+		}catch (IOException e){}
+	}
 
 }
