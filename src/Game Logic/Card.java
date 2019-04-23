@@ -6,7 +6,7 @@ public class Card{
     public final static int REVERSE = 11;
     public final static int DRAWTWO = 12;
     public final static int WILDCARD = 13;
-    public final static int WILDDRAW4 = 14;    
+    public final static int WILDDRAW4 = 14; 
     
     /* COLORS */
     public final static int GREEN = 1;
