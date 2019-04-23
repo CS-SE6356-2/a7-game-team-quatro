@@ -2,7 +2,7 @@
 //Second Author: Jacob Villarreal
 import java.util.*;
 
-public class Deck implements Pile {    
+public class Deck {    
     ArrayList<Card> deck;
     int numCards = 0;
     
@@ -28,11 +28,6 @@ public class Deck implements Pile {
 	    deck.add(new Card(13, 5));
 	    deck.add(new Card(14, 5));
        }
-    }
-
-    @Override
-    public void pushCard(Card c) {
-        deck.add(c);
     }
 
     public void shuffle(){
