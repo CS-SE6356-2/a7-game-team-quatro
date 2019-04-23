@@ -1,4 +1,5 @@
 //Shannen Barrameda sib170130 CS3354.HON Team 3
+//Second Author: Jacob Villarreal
 import java.util.*;
 
 public class Deck implements Pile {    

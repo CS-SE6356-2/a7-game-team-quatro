@@ -19,7 +19,7 @@ public class Card{
     
     public Card(){
        value = WILDCARD;
-       suit = WILD;
+       color = WILD;
     }
     
     public Card(int value, int color){
