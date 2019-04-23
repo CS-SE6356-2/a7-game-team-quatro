@@ -4,23 +4,19 @@ import java.util.*;
 
 public class Deck {    
     ArrayList<Card> deck;
-    int numCards = 0;
     
     public Deck(){
        deck = new ArrayList<Card>();
        for(int color = 1; color <= 4; color++){
 	   deck.add(new Card(0, color));
-	   numCards++;
 
            for(int val = 1; val <= 9 ; val++){
                deck.add(new Card(val, color));
 	       deck.add(new Card(val, color));
-               numCards += 2;
            }
 	   for (int val = 10; val <= 14; val++)
 	   {
 	       deck.add(new Card(val, color));
-	       numCards++;
 	   }
        }
        for(int i = 1; i <= 4; i++)
@@ -34,17 +30,12 @@ public class Deck {
         Collections.shuffle(deck);
     }
     
-    public int cardsLeft(){
-        return numCards;
-    }
-    
     public Card dealTopCard(){
         return dealCard(0);
     }
     
     public Card dealCard(int n){
-        if(cardsLeft() > 0){
-            numCards--;
+        if(deck.size() > 0){
             return deck.remove(n);
         }
         else{
