@@ -1,17 +1,31 @@
 //Shannen Barrameda sib170130 CS3354.HON Team 3
 import java.util.*;
 
-public class Deck implements Pile {
+public class Deck implements Pile {    
     ArrayList<Card> deck;
     int numCards = 0;
     
     public Deck(){
        deck = new ArrayList<Card>();
-       for(int suit = 1; suit < 6; suit++){
-           for(int val = 1; val < 14; val++){
-                deck.add(new Card(val, suit));
-                numCards++;
+       for(int color = 1; color <= 4; color++){
+	   deck.add(new Card(0, color));
+	   numCards++;
+
+           for(int val = 1; val <= 9 ; val++){
+               deck.add(new Card(val, color));
+	       deck.add(new Card(val, color));
+               numCards += 2;
            }
+	   for (int val = 10; val <= 14; val++)
+	   {
+	       deck.add(new Card(val, color));
+	       numCards++;
+	   }
+       }
+       for(int i = 1; i <= 4; i++)
+       {
+	    deck.add(new Card(13, 5));
+	    deck.add(new Card(14, 5));
        }
     }
 
