@@ -21,7 +21,7 @@ public abstract class Player {
 
     public abstract void giveCards(Player p);
 
-    public abstract <T> Turn<T> takeTurn(List<Turn<T>> hist);
+//  public abstract <T> Turn<T> takeTurn(List<Turn<T>> hist);
 
     public int getScore() {
         return score;
