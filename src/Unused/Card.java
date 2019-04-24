@@ -1,5 +1,6 @@
 //Shannen Barrameda sib170130 CS3354.HON Team 3
 // Second Author: Jacob Villarreal
+
 public class Card{
     /* SPECIAL CARDS */
     public final static int SKIP = 10;
