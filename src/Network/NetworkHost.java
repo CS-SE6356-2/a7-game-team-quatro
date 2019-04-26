@@ -19,18 +19,26 @@ public class NetworkHost extends Thread{
 	String state;
 	
 	
+	public NetworkHost() {
+		clients = new ClientList();
+	}
+	
 	@Override
 	public void run(){
 		
 		while(state.equals("Joining")) {//Continuously runs catching connecting clients
 			connectClient();
+			
+			updateClients();
+			String names = "Player list:\n"+clients.getNameList();//get updated player names list
+			broadcastToClients(names);//send out updated player names list
+			
 		}
 		
 		if(state.equals("Playing")) {//switches gear to the game loop
 			broadcastToClients("Begin game");
-			while(state.equals("Joining")) {//continually runs, managing communication needed for the game
-				//cycle player turns
-			}
+			
+			
 		}
 
 	}
@@ -81,12 +89,9 @@ public class NetworkHost extends Thread{
 				return false;
 			}
 			//otherwise name is good
+			writeToClient(newClient, "Welcome");
 			clients.add(newClient);//new client is all set
-			
-			updateClients();
-			String names = "Player list:\n"+clients.getNameList();//get updated player names list
-			broadcastToClients(names);//send out updated player names list
-			
+			return true;
 		}
 		catch(SocketTimeoutException e){}//waiting for a client timed out, means nobody tried to connect
 		catch(IOException e){}//something failed, hopefully the client tries again
@@ -159,6 +164,7 @@ public class NetworkHost extends Thread{
 		try{
 			serverSocket.close();
 		}catch (IOException e){}
+		clients = new ClientList();
 	}
 
 }

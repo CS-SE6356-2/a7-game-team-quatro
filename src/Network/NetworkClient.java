@@ -36,19 +36,28 @@ public class NetworkClient extends Thread{
 	}
 	
 	//attempts to establish a connection to a server
-	boolean connectToServer(String addressStr, int portNumber) {
+	String connectToServer(String addressStr, int portNumber, String name) {
 		try {
 			socket = new Socket();
 			InetSocketAddress address = new InetSocketAddress(addressStr, portNumber);
 			socket.connect(address, 10000);
+			//if made it here, established a connection
+			DataInputStream in = new DataInputStream(socket.getInputStream());
+			String message = in.readUTF();//"Who are you"
+			writeToServer(name);
+			if(message.equals("Name Taken")) {//name is taken, must try again
+				return "Name Taken";
+			}
+			//else message.equals("Welcome"), and we're in
 			state = "Running";
 			this.start();//starts reading messages from the server
-			return true;
+			
+			return "Success";
 		}
 		catch(UnknownHostException e){}//could not find server
 		catch(SocketTimeoutException e){}//connection attempt timed out
 		catch(IOException e){}//failed to connect
-		return false;
+		return "ERROR";
 	}
 	
 	//sends the string to the server
@@ -65,16 +74,8 @@ public class NetworkClient extends Thread{
 	
 	//will be called when a message is received from the server
 	void messageFromServer_Handler(String message) {
-		if(message.equals("Who are you?")) {
-			//send current name from GUI which should be ready
-			String name = "John Doe";
-			writeToServer(name);
-		}
-		else if(message.equals("Name taken")) {
-			//tell GUI that name is taken
-			//tell GUI to connect again with new name
-		}
-		else if(message.startsWith("Player list:")) {
+		if(message.startsWith("Player list:")) {
+			System.out.println(message);
 			//tell GUI the player list
 		}
 		else if(message.equals("Begin game")) {

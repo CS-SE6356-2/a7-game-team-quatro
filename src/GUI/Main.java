@@ -25,9 +25,8 @@ public class Main extends Application implements Runnable {
     private NetworkHost hostThread;
     private NetworkClient clientThread;
     
-    
     private Stage window; // main stage to display on the screen
-    private ViewHandler vh; //  manages all renderables on the screen
+//    private ViewHandler vh; //  manages all renderables on the screen
 
     private Thread thread; // thread running
     private boolean running = false; // whether or not the application is still active
@@ -51,7 +50,7 @@ public class Main extends Application implements Runnable {
 	private Button connectToServer;//on joining screen, attempts to connect to server
 	
 	private Button menu;//on joining and hosting screen, goes to main menu
-	
+	private Button showCanvas;
 	
 	
     /**
@@ -63,14 +62,14 @@ public class Main extends Application implements Runnable {
     	clientThread = new NetworkClient();// can really be initialized whenever
     	
         // Initializes ViewHandler which serves to hold, render, and tick all Renderable objects
-        vh = new ViewHandler();
+//        vh = new ViewHandler();
 
         // Dummy renderable ViewCards
-        for (int i = 0; i < 3; ++i) {
-            vh.addRenderable(new ViewCard(Suit.Clubs, 4 * i + 2, WIDTH / 3 * i, 0));
-        }
-        // Dynamic object to test for functioning rerender and tick methods
-        vh.addRenderable(new DynamicObject(0, 0));
+//        for (int i = 0; i < 3; ++i) {
+//            vh.addRenderable(new ViewCard(Suit.Clubs, 4 * i + 2, WIDTH / 3 * i, 0));
+//        }
+//        // Dynamic object to test for functioning rerender and tick methods
+//        vh.addRenderable(new DynamicObject(0, 0));
         
         
         menuRoot = new VBox();
@@ -92,6 +91,13 @@ public class Main extends Application implements Runnable {
         startServer.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				
+				if(nameField.getText().isEmpty()) {
+					networkInfo.setText("Please enter a name");
+					return;
+				}
+				name = nameField.getText();
+				
 				networkInfo.setText("Starting server...");
 				hostThread = new NetworkHost();
 				String address = hostThread.startHost();
@@ -100,6 +106,17 @@ public class Main extends Application implements Runnable {
 					hostThread = null;
 				}
 				else {
+					String[] addInfo = address.split(":");
+					if(addInfo.length != 2) {
+						networkInfo.setText("Invalid address");
+						return;
+					}
+					int port = Integer.parseInt(addInfo[1]);
+					String result = clientThread.connectToServer(addInfo[0], port, name);
+					if(result.equals("ERROR")) {
+						networkInfo.setText("Error starting server");
+						return;
+					}
 					hostingMenu(address);
 				}
 			}
@@ -117,13 +134,30 @@ public class Main extends Application implements Runnable {
         connectToServer.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				
+				if(nameField.getText().isEmpty()) {
+					networkInfo.setText("Please enter a name");
+					return;
+				}
+				name = nameField.getText();
+				
 				String[] addInfo = addressField.getText().split(":");
 				if(addInfo.length != 2) {
 					networkInfo.setText("Invalid address");
 					return;
 				}
 				int port = Integer.parseInt(addInfo[1]);
-				clientThread.connectToServer(addInfo[0], port);
+				String result = clientThread.connectToServer(addInfo[0], port, name);
+				if(result.equals("Name taken")) {
+					networkInfo.setText("That name is taken, type another name");
+					return;
+				}
+				else if(result.equals("ERROR")) {
+					networkInfo.setText("Error connecting to server");
+					return;
+				}
+				//otherwise we are connected, move to lobby
+				lobbyMenu();
 			}
 		});
         
@@ -132,6 +166,14 @@ public class Main extends Application implements Runnable {
 			@Override
 			public void handle(ActionEvent event) {
 				mainMenu();
+			}
+		});
+        
+        showCanvas = new Button("Show Canvas");
+        showCanvas.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				showCanvas();
 			}
 		});
     }
@@ -147,7 +189,7 @@ public class Main extends Application implements Runnable {
     	
     	screenInfo.setText("Main Menu - UNO");
     	
-    	menuRoot.getChildren().addAll(screenInfo, startServer);
+    	menuRoot.getChildren().addAll(screenInfo, showCanvas, joinServer, hostServer);
     	root.getChildren().add(menuRoot);
     	
     }
@@ -168,8 +210,8 @@ public class Main extends Application implements Runnable {
     	root.getChildren().clear();
     	menuRoot.getChildren().clear();
     	
-    	screenInfo.setText("Hosting a Game");
-    	networkInfo.setText("Server Address - "+address);
+    	screenInfo.setText("Hosting a Game - Server Addres "+address);
+    	networkInfo.setText("");
     	
     	menuRoot.getChildren().addAll(screenInfo, networkInfo, menu);
     	root.getChildren().add(menuRoot);
@@ -185,8 +227,23 @@ public class Main extends Application implements Runnable {
     	addressField.setPromptText("Address");
     	nameField.setText("");
     	nameField.setPromptText("Name");
-    	menuRoot.getChildren().addAll(screenInfo, networkInfo, addressField, nameField, joinServer, menu);
+    	menuRoot.getChildren().addAll(screenInfo, networkInfo, addressField, nameField, connectToServer, menu);
     	root.getChildren().add(menuRoot);
+    }
+    
+    private void lobbyMenu() {
+    	root.getChildren().clear();
+    	menuRoot.getChildren().clear();
+    	
+    	screenInfo.setText("Lobby - waiting for game to start");
+    	networkInfo.setText("");
+    	menuRoot.getChildren().addAll(screenInfo, networkInfo, menu);
+    	root.getChildren().add(menuRoot);
+    }
+    
+    private void showCanvas() {
+    	root.getChildren().clear();
+    	root.getChildren().addAll(canvas);
     }
     
     public void run() {
@@ -232,7 +289,7 @@ public class Main extends Application implements Runnable {
      *  Renderable objects.
      */
     private void tick() {
-        vh.tick();
+//        vh.tick();
     }
 
 
@@ -255,7 +312,7 @@ public class Main extends Application implements Runnable {
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, WIDTH, HEIGHT);
 
-        vh.render(gc);
+//        vh.render(gc);
     }
 
 
