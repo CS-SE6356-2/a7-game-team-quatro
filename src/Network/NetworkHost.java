@@ -1,6 +1,5 @@
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -74,10 +73,14 @@ public class NetworkHost extends Thread{
 			Socket newSocket = serverSocket.accept();//this line throws the exceptions
 			//client connected if we reach here
 			Client newClient = new Client(newSocket);//create new client
-			writeToClient(newClient, "How are you?");//ask for name
+			writeToClient(newClient, "How are you?");//ask for name, client should have name ready
 			String name = waitForClientReply(newClient);//get name
 			if(name == null) return false;//client didn't give name, disconnected
-			//make sure name is unique
+			if(!clients.isUniqueName(name)) {//if name is taken, tell client to try again
+				writeToClient(newClient, "Name taken");
+				return false;
+			}
+			//otherwise name is good
 			clients.add(newClient);//new client is all set
 			
 			updateClients();

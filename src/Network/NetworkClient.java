@@ -66,13 +66,13 @@ public class NetworkClient extends Thread{
 	//will be called when a message is received from the server
 	void messageFromServer_Handler(String message) {
 		if(message.equals("Who are you?")) {
-			//get name from GUI
-			//writeToServer(name);
+			//send current name from GUI which should be ready
+			String name = "John Doe";
+			writeToServer(name);
 		}
 		else if(message.equals("Name taken")) {
 			//tell GUI that name is taken
-			//get a new name from GUI
-			//writeToServer(name);
+			//tell GUI to connect again with new name
 		}
 		else if(message.startsWith("Player list:")) {
 			//tell GUI the player list
@@ -85,9 +85,13 @@ public class NetworkClient extends Thread{
 		}
 		else if(message.equals("Your turn")) {
 			//Tell GUI that is the client's turn
-			//get turn info from GUI
-			//writeToServer(turnInfo)
+			//tell GUI to send back turn info
 		}
+	}
+	
+	//GUI should call this after told to take a turn
+	void respondWithTurnInfo(String turn) {
+		writeToServer(turn);
 	}
 	
 	//lost connection to the server
