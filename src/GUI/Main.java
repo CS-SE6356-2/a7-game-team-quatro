@@ -1,10 +1,16 @@
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 
@@ -12,6 +18,14 @@ public class Main extends Application implements Runnable {
     public final static int WIDTH = 900; // window width
     public final static int HEIGHT = 600;  // window height
 
+    //Player's name, will need to be accessed by client thread
+    public String name;
+    
+    //References to the network threads
+    private NetworkHost hostThread;
+    private NetworkClient clientThread;
+    
+    
     private Stage window; // main stage to display on the screen
     private ViewHandler vh; //  manages all renderables on the screen
 
@@ -19,12 +33,35 @@ public class Main extends Application implements Runnable {
     private boolean running = false; // whether or not the application is still active
 
     private Canvas canvas; // draw canvas for the window
-
+    
+    
+    private StackPane root;//all GUI objects are added to this parent
+    private VBox menuRoot;//vertical container for menu objects
+    
+    //Added to interact with network
+    private Text screenInfo;//labels current screen
+    private Text newtworkInfo;//contains info from client thread
+	private TextField nameField;//to input the player's name
+	private TextField serverField;//to input the server address
+	
+	private Button hostServer;//on main menu, moves to setup the host server screen
+	private Button startServer;//on hosting server screen, starts the server
+	
+	private Button joinServer;//on main menu, moves to joining server screen
+	private Button connectToServer;//on joining screen, attempts to connect to server
+	
+	private Button menu;//on joining and hosting screen, goes to main menu
+	
+	
+	
     /**
      * Initializes all objects required for the lifetime
      *  of the GUI because no constructor is called.
      */
     public void init() {
+    	
+    	clientThread = new NetworkClient();// can really be initialized whenever
+    	
         // Initializes ViewHandler which serves to hold, render, and tick all Renderable objects
         vh = new ViewHandler();
 
@@ -34,8 +71,43 @@ public class Main extends Application implements Runnable {
         }
         // Dynamic object to test for functioning rerender and tick methods
         vh.addRenderable(new DynamicObject(0, 0));
+        
+        
+        screenInfo = new Text();
+        newtworkInfo = new Text();
+        nameField = new TextField();
+        serverField = new TextField();
+        
+        hostServer = new Button("Host Game");
+        startServer = new Button("Start Server");
+        joinServer = new Button("Join Game");
+        connectToServer = new Button("Connect to Server");
+        
+        menu = new Button("Main Menu");
+        menu.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				mainMenu();
+			}
+		});
     }
 
+    
+    private void mainMenu() {
+    	
+    	if(hostThread != null) hostThread.shutdown();
+    	if(clientThread != null) clientThread.shutdown();
+    	
+    	root.getChildren().clear();
+    	menuRoot.getChildren().clear();
+    	
+    	screenInfo.setText("Main Menu - UNO");
+    	
+    	menuRoot.getChildren().addAll(screenInfo, joinServer, startServer);
+    	root.getChildren().add(menuRoot);
+    	
+    }
+    
     public void run() {
         /*
          * Defines the activity that occurs
@@ -111,7 +183,7 @@ public class Main extends Application implements Runnable {
         window = primaryStage;
         primaryStage.setTitle("Generic Card Game Engine");
 
-        StackPane root = new StackPane();
+        root = new StackPane();
         canvas = new Canvas(WIDTH, HEIGHT);
 
         init();
