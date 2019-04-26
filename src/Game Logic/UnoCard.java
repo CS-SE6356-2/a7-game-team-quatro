@@ -1,52 +1,77 @@
+
 /* Original Author: Shannen Barrameda
  * Author: Jacob Villarreal */
+
+import java.util.*;
 
 /* Represents a single Uno playing card */
 public class UnoCard
 {
-	/* Special Cards */
-	public final static int skip = 10;
-	public final static int reverse = 11;
-	public final static int drawTwo = 12;
-	public final static int wildCard = 13;
-	public final static int wildDrawFour = 14;
-
-	/* Colors */
-	public final static int green = 1;
-	public final static int red = 2;
-	public final static int yellow = 3;
-	public final static int blue = 4;
-	public final static int wildColor = 5;
-
 	/* Data members */
-	private int type;
-	private int color;
-
-	/* Constructor */
-	public UnoCard(int cType, int cColor)
+	private String type;
+	private String color;
+	
+	/* Special Cards */
+	public static final ArrayList<String> cardTypes
+		= new ArrayList<>(
+				Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+							  "skip, reverse, draw2", "wild", "wild4"));
+	
+	public static final ArrayList<String> cardColors
+		= new ArrayList<>(
+				Arrays.asList("green", "red", "yellow", "blue", "wild"));
+	
+	/* Constructors */
+	public UnoCard(String cType, String cColor)
 	{
-		/* Validate parameters. Card is made a wild card
-		 * if parameters are invalid. */
-		if (cType >= 0 && cType <= UnoCard.wildCard
-		    && cColor >= UnoCard.green && cColor <= UnoCard.wildColor)
+		if (UnoCard.cardTypes.contains(cType)
+			&& UnoCard.cardColors.contains(cColor))
 		{
 			this.type = cType;
-			this.type = cColor;	
+			this.color = cColor;
 		}
 		else
 		{
-			this.type = UnoCard.wildCard;
-			this.color = UnoCard.wildColor;
+			this.type = "ERROR";
+			this.color = "ERROR";
 		}
+	}
+	
+	@Override
+	public boolean equals(Object object)
+	{
+		if (this == object)
+		{
+			return true;
+		}
+		if (object == null || this.getClass() != object.getClass())
+		{
+			return false;
+		}
+		UnoCard card = (UnoCard) object;
+		return card.type == this.type
+			&& card.color == this.color;
+	}
+			
+	/* Compares with another card to see if they match. Matching means
+	 * that one card can be put on top of another in the discard pile. */
+	public boolean matches(UnoCard otherCard)
+	{
+		/* Anything matches with a wild card.
+		 * Otherwise, cards match if color or type are the same. */
+		return this.getColor() == "wild" 
+		    || otherCard.getColor() == "wild" 
+		    || this.getColor() == otherCard.getColor()
+		    || this.getType() == otherCard.getType();
 	}
 
 	/* Getters */
-	public int getType()
+	public String getType()
 	{
 		return this.type;
 	}
 
-	public int getColor()
+	public String getColor()
 	{
 		return this.color;
 	}
