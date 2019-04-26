@@ -107,7 +107,8 @@ public class NetworkClient extends Thread{
 	void shutdown() {
 		state = "Shutdown";
 		try{
-			socket.close();//close each client
+			if(socket != null)
+				socket.close();//close each client
 		}catch (IOException e){}
 	}
 

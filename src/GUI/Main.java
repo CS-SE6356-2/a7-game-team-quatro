@@ -40,9 +40,9 @@ public class Main extends Application implements Runnable {
     
     //Added to interact with network
     private Text screenInfo;//labels current screen
-    private Text newtworkInfo;//contains info from client thread
+    private Text networkInfo;//contains info from client thread
 	private TextField nameField;//to input the player's name
-	private TextField serverField;//to input the server address
+	private TextField addressField;//to input the server address
 	
 	private Button hostServer;//on main menu, moves to setup the host server screen
 	private Button startServer;//on hosting server screen, starts the server
@@ -73,15 +73,59 @@ public class Main extends Application implements Runnable {
         vh.addRenderable(new DynamicObject(0, 0));
         
         
+        menuRoot = new VBox();
+        
         screenInfo = new Text();
-        newtworkInfo = new Text();
+        networkInfo = new Text();
         nameField = new TextField();
-        serverField = new TextField();
+        addressField = new TextField();
         
         hostServer = new Button("Host Game");
+        hostServer.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				setupHostMenu();
+			}
+		});
+        
         startServer = new Button("Start Server");
+        startServer.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				networkInfo.setText("Starting server...");
+				hostThread = new NetworkHost();
+				String address = hostThread.startHost();
+				if(address == null) {//server failed to start
+					networkInfo.setText("Failed to start server");
+					hostThread = null;
+				}
+				else {
+					hostingMenu(address);
+				}
+			}
+		});
+        
         joinServer = new Button("Join Game");
+        joinServer.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				joiningMenu();
+			}
+		});
+        
         connectToServer = new Button("Connect to Server");
+        connectToServer.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				String[] addInfo = addressField.getText().split(":");
+				if(addInfo.length != 2) {
+					networkInfo.setText("Invalid address");
+					return;
+				}
+				int port = Integer.parseInt(addInfo[1]);
+				clientThread.connectToServer(addInfo[0], port);
+			}
+		});
         
         menu = new Button("Main Menu");
         menu.setOnAction(new EventHandler<ActionEvent>() {
@@ -103,9 +147,46 @@ public class Main extends Application implements Runnable {
     	
     	screenInfo.setText("Main Menu - UNO");
     	
-    	menuRoot.getChildren().addAll(screenInfo, joinServer, startServer);
+    	menuRoot.getChildren().addAll(screenInfo, startServer);
     	root.getChildren().add(menuRoot);
     	
+    }
+    
+    private void setupHostMenu() {
+    	root.getChildren().clear();
+    	menuRoot.getChildren().clear();
+    	
+    	screenInfo.setText("Host a Game");
+    	networkInfo.setText("Enter your name");
+    	nameField.setText("");
+    	nameField.setPromptText("Name");
+    	menuRoot.getChildren().addAll(screenInfo, networkInfo, nameField, startServer, menu);
+    	root.getChildren().add(menuRoot);
+    }
+    
+    private void hostingMenu(String address) {
+    	root.getChildren().clear();
+    	menuRoot.getChildren().clear();
+    	
+    	screenInfo.setText("Hosting a Game");
+    	networkInfo.setText("Server Address - "+address);
+    	
+    	menuRoot.getChildren().addAll(screenInfo, networkInfo, menu);
+    	root.getChildren().add(menuRoot);
+    }
+    
+    private void joiningMenu() {
+    	root.getChildren().clear();
+    	menuRoot.getChildren().clear();
+    	
+    	screenInfo.setText("Join a Game");
+    	networkInfo.setText("Enter the server address and your name");
+    	addressField.setText("");
+    	addressField.setPromptText("Address");
+    	nameField.setText("");
+    	nameField.setPromptText("Name");
+    	menuRoot.getChildren().addAll(screenInfo, networkInfo, addressField, nameField, joinServer, menu);
+    	root.getChildren().add(menuRoot);
     }
     
     public void run() {
@@ -189,10 +270,12 @@ public class Main extends Application implements Runnable {
         init();
 
         root.getChildren().addAll(canvas);
-
+        
         primaryStage.setScene(new Scene(root, WIDTH, HEIGHT));
         primaryStage.show();
 
+        mainMenu();
+        
         thread = new Thread(this);
 
         // don't let thread prevent JVM shutdown
