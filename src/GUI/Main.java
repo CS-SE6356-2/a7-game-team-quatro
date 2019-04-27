@@ -25,6 +25,8 @@ public class Main extends Application implements Runnable {
     private NetworkHost hostThread;
     private NetworkClient clientThread;
     
+    private Main thisMain;
+    
     private Stage window; // main stage to display on the screen
 //    private ViewHandler vh; //  manages all renderables on the screen
 
@@ -45,9 +47,12 @@ public class Main extends Application implements Runnable {
 	
 	private Button hostServer;//on main menu, moves to setup the host server screen
 	private Button startServer;//on hosting server screen, starts the server
+	private Button startGame;//on hosting server screen, moves everyone to game
 	
 	private Button joinServer;//on main menu, moves to joining server screen
 	private Button connectToServer;//on joining screen, attempts to connect to server
+	
+	private Button endTurn;
 	
 	private Button menu;//on joining and hosting screen, goes to main menu
 	private Button showCanvas;
@@ -59,7 +64,7 @@ public class Main extends Application implements Runnable {
      */
     public void init() {
     	
-    	clientThread = new NetworkClient();// can really be initialized whenever
+    	thisMain = this;
     	
         // Initializes ViewHandler which serves to hold, render, and tick all Renderable objects
 //        vh = new ViewHandler();
@@ -112,6 +117,8 @@ public class Main extends Application implements Runnable {
 						return;
 					}
 					int port = Integer.parseInt(addInfo[1]);
+					clientThread = new NetworkClient();
+					clientThread.GUI = thisMain;
 					String result = clientThread.connectToServer(addInfo[0], port, name);
 					if(result.equals("ERROR")) {
 						networkInfo.setText("Error starting server");
@@ -119,6 +126,14 @@ public class Main extends Application implements Runnable {
 					}
 					hostingMenu(address);
 				}
+			}
+		});
+        
+        startGame = new Button("Start Game");
+        startGame.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				startGame();
 			}
 		});
         
@@ -147,6 +162,8 @@ public class Main extends Application implements Runnable {
 					return;
 				}
 				int port = Integer.parseInt(addInfo[1]);
+				clientThread = new NetworkClient();
+				clientThread.GUI = thisMain;
 				String result = clientThread.connectToServer(addInfo[0], port, name);
 				if(result.equals("Name taken")) {
 					networkInfo.setText("That name is taken, type another name");
@@ -158,6 +175,14 @@ public class Main extends Application implements Runnable {
 				}
 				//otherwise we are connected, move to lobby
 				lobbyMenu();
+			}
+		});
+        
+        endTurn = new Button("End Turn");
+        endTurn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				endTurn();
 			}
 		});
         
@@ -210,10 +235,10 @@ public class Main extends Application implements Runnable {
     	root.getChildren().clear();
     	menuRoot.getChildren().clear();
     	
-    	screenInfo.setText("Hosting a Game - Server Addres "+address);
+    	screenInfo.setText("Hosting a Game - Server Address "+address);
     	networkInfo.setText("");
     	
-    	menuRoot.getChildren().addAll(screenInfo, networkInfo, menu);
+    	menuRoot.getChildren().addAll(screenInfo, networkInfo, startGame, menu);
     	root.getChildren().add(menuRoot);
     }
     
@@ -241,9 +266,48 @@ public class Main extends Application implements Runnable {
     	root.getChildren().add(menuRoot);
     }
     
+    private void startGame() {
+    	hostThread.state = "Playing";
+    }
+    
     private void showCanvas() {
     	root.getChildren().clear();
     	root.getChildren().addAll(canvas);
+    }
+    
+    private void endTurn() {
+    	menuRoot.getChildren().remove(endTurn);
+    	clientThread.respondWithTurnInfo(name+" played");
+    }
+    
+    public void updatePlayerList(String names) {
+    	networkInfo.setText(names);
+    }
+    
+    public void goToGame() {
+    	root.getChildren().clear();
+    	menuRoot.getChildren().clear();
+    	
+    	screenInfo.setText("Uno");
+    	networkInfo.setText("");
+    	menuRoot.getChildren().addAll(screenInfo, networkInfo);
+    	root.getChildren().addAll(menuRoot);
+    }
+    
+    public void updateGameInfo(String info) {
+    	networkInfo.setText(info);
+    }
+    
+    public void takeTurn() {
+    	menuRoot.getChildren().add(endTurn);
+    }
+    
+    
+    public void disconnected() {
+    	
+    	mainMenu();
+    	networkInfo.setText("Disconnected by server");
+    	menuRoot.getChildren().add(networkInfo);
     }
     
     public void run() {

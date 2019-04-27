@@ -6,12 +6,15 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import javafx.application.Platform;
+
 //GUI have a reference to an instance of NetworkClient, and should call connectToServer() to get things rolling
 //GUI should call shutdown() to stop
 public class NetworkClient extends Thread{
 
 	Socket socket;
 	String state;
+	Main GUI;
 	
 	@Override
 	public void run(){// called from Thread.start()
@@ -20,13 +23,17 @@ public class NetworkClient extends Thread{
 			DataInputStream in;
 			try{
 				in = new DataInputStream(socket.getInputStream());
-			}catch (IOException e){continue;}//are we closed?
+			}catch (IOException e){//are we closed? Something probably happened...
+				disconnected();
+				return;
+			}
 			
 			try {
 				String message = in.readUTF();
 				messageFromServer_Handler(message);
 			}catch (IOException e){//server is probably shutdown
 				disconnected();
+				return;
 			}
 		}
 		//socket is closed
@@ -74,20 +81,25 @@ public class NetworkClient extends Thread{
 	
 	//will be called when a message is received from the server
 	void messageFromServer_Handler(String message) {
-		if(message.startsWith("Player list:")) {
-			System.out.println(message);
-			//tell GUI the player list
-		}
-		else if(message.equals("Begin game")) {
-			//tell GUI to move from lobby to game field
-		}
-		else if(message.startsWith("Info:")) {
-			//tell GUI to update game info
-		}
-		else if(message.equals("Your turn")) {
-			//Tell GUI that is the client's turn
-			//tell GUI to send back turn info
-		}
+		Platform.runLater(new Runnable() {
+			   @Override
+			   public void run() {
+				   if(message.startsWith("Player list:")) {
+						GUI.updatePlayerList(message.substring(message.indexOf(":")+1));
+						//tell GUI the player list
+					}
+					else if(message.equals("Begin game")) {
+						GUI.goToGame();
+					}
+					else if(message.startsWith("Info:")) {
+						GUI.updateGameInfo(message.substring(message.indexOf(":")+1));
+					}
+					else if(message.equals("Your turn")) {
+						GUI.takeTurn();
+					}
+			   }
+			});
+		
 	}
 	
 	//GUI should call this after told to take a turn
@@ -99,18 +111,24 @@ public class NetworkClient extends Thread{
 	void disconnected() {
 		//tell GUI that server disconnected
 		state = "Disconnected";
-		try{
-			socket.close();//close each client
-		}catch (IOException e){}
+		close();
+		GUI.updatePlayerList("Disconnected");
+		//GUI.disconnected();
 	}
 	
 	//closes the connection to the server, to be called by GUI
 	void shutdown() {
 		state = "Shutdown";
+		close();
+	}
+	
+	//closes socket
+	private void close() {
 		try{
 			if(socket != null)
 				socket.close();//close each client
 		}catch (IOException e){}
+		
 	}
 
 }

@@ -5,7 +5,9 @@ public class ClientList extends ArrayList<Client>{
 	//returns true if the passed string not already a name in the list of clients
 	boolean isUniqueName(String newName) {
 		for(Client client:this) {
-			if(newName.equals(client.name)) return false;//name already exists in list
+			if(newName.equals(client.name)) {
+				return false;//name already exists in list
+			}
 		}
 		return true;//name must not already exist
 	}

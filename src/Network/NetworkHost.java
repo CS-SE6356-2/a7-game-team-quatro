@@ -38,6 +38,13 @@ public class NetworkHost extends Thread{
 		if(state.equals("Playing")) {//switches gear to the game loop
 			broadcastToClients("Begin game");
 			
+			while(state.equals("Playing")) {
+				for(int i = 0; i < clients.size(); i++) {
+					writeToClient(clients.get(i), "Your turn");
+					String move = waitForClientReply(clients.get(i));
+					broadcastToClients("Info:"+move);
+				}
+			}
 			
 		}
 
@@ -57,6 +64,7 @@ public class NetworkHost extends Thread{
 				serverSocket = new ServerSocket(0);//this line throws exceptions, argument zero chooses an available port
 				success = true;//server created if made it here
 				ipAddress = InetAddress.getLocalHost().getHostAddress() +":"+ serverSocket.getLocalPort();
+				serverSocket.setSoTimeout(1000);//wait up to 1 second when waiting for a client
 				
 				//put IP address in clipboard to make my life easier
 				StringSelection data = new StringSelection(ipAddress);
@@ -78,6 +86,7 @@ public class NetworkHost extends Thread{
 	//attempts to receive a client connection
 	boolean connectClient() {
 		try {
+			
 			Socket newSocket = serverSocket.accept();//this line throws the exceptions
 			//client connected if we reach here
 			Client newClient = new Client(newSocket);//create new client
@@ -89,6 +98,7 @@ public class NetworkHost extends Thread{
 				return false;
 			}
 			//otherwise name is good
+			newClient.name = name;
 			writeToClient(newClient, "Welcome");
 			clients.add(newClient);//new client is all set
 			return true;
@@ -109,9 +119,10 @@ public class NetworkHost extends Thread{
 	
 	//check if any clients have disconnected
 	void updateClients() {
-		for(Client client:clients) {//for each client
-			if(client.socket.isClosed() || client.socket.isOutputShutdown() || client.socket.isInputShutdown()) {//if the socket is disconnected
-				disconnectClient(client);//remove the client from the list
+		for(int i = 0;i < clients.size(); i++) {//for each client
+			if(clients.get(i).socket.isClosed() || clients.get(i).socket.isOutputShutdown() || clients.get(i).socket.isInputShutdown()) {//if the socket is disconnected
+				disconnectClient(clients.get(i));//remove the client from the list
+				i--;
 			}
 		}
 	}
@@ -120,12 +131,12 @@ public class NetworkHost extends Thread{
 	//sends the message to all clients
 	void broadcastToClients(String message) {
 		updateClients();//removed disconnect clients
-		for(Client client:clients) {//for each client
-			if(!writeToClient(client, message)) {//Send message
-				disconnectClient(client);//if the message fails, remove the client from list
+		for(int i = 0;i < clients.size(); i++) {//for each client
+			if(!writeToClient(clients.get(i), message)) {//Send message
+				disconnectClient(clients.get(i));//if the message fails, remove the client from list
+				i--;
 			}
 		}
-		
 	}
 	
 	//sends the message to all clients
