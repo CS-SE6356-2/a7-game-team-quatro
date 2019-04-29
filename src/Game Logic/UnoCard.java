@@ -59,10 +59,10 @@ public class UnoCard
 	{
 		/* Anything matches with a wild card.
 		 * Otherwise, cards match if color or type are the same. */
-		return this.getColor() == "wild" 
-		    || otherCard.getColor() == "wild" 
-		    || this.getColor() == otherCard.getColor()
-		    || this.getType() == otherCard.getType();
+		return this.getColor().equals("wild") 
+		    || otherCard.getColor().equals("wild" )
+		    || this.getColor().equals(otherCard.getColor())
+		    || this.getType().equals(otherCard.getType());
 	}
 
 	/* Getters */
