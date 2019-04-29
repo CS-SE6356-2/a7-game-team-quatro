@@ -90,6 +90,7 @@ public class UnoGame
 				this.turnOrder.goToNextPlayer();
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
+				this.turnOrder.goToNextPlayer();
 			}
 			
 			/* if a draw 4 card was played, the next player is dealt 4 cards */
@@ -100,6 +101,7 @@ public class UnoGame
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
+				this.turnOrder.goToNextPlayer();
 			}
 			else {
 				this.turnOrder.goToNextPlayer();
