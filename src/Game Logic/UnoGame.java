@@ -65,21 +65,21 @@ public class UnoGame
 		else
 		{
 			/* If a skip card was played, the next player's turn is skipped */
-			if (result == "skip")
+			if (result.equals("skip"))
 			{
 				this.turnOrder.goToNextPlayer();
 				this.turnOrder.goToNextPlayer();
 			}
 			
 			/* If a reverse card was played, the turn order is reversed */
-			else if (result == "reverse")
+			else if (result.equals("reverse"))
 			{
 				this.turnOrder.reverseOrder();
 				this.turnOrder.goToNextPlayer();
 			}
 			
 			/* if a draw 2 card was played, the next player is dealt 2 cards */
-			else if (result == "draw2")
+			else if (result.equals("draw2"))
 			{
 				this.turnOrder.goToNextPlayer();
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
@@ -87,7 +87,7 @@ public class UnoGame
 			}
 			
 			/* if a draw 4 card was played, the next player is dealt 4 cards */
-			else if (result == "wild4")
+			else if (result.equals("wild4"))
 			{
 				this.turnOrder.goToNextPlayer();
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
