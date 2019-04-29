@@ -1,10 +1,12 @@
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.LinkedList;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -14,6 +16,8 @@ import java.net.ServerSocket;
 //GUI should call shutdown() to stop
 public class NetworkHost extends Thread{
 
+	UnoGame game;
+	
 	ClientList clients;//ArrayList of clients, ClientList extends ArrayList<Client>
 	ServerSocket serverSocket;
 	String state;
@@ -36,18 +40,56 @@ public class NetworkHost extends Thread{
 		}
 		
 		if(state.equals("Playing")) {//switches gear to the game loop
-			broadcastToClients("Begin game");
+			
+			startGame();
 			
 			while(state.equals("Playing")) {
-				for(int i = 0; i < clients.size(); i++) {
-					writeToClient(clients.get(i), "Your turn");
-					String move = waitForClientReply(clients.get(i));
-					broadcastToClients("Info:"+move);
-				}
+				gameTurn();
+//				for(int i = 0; i < clients.size(); i++) {
+//					writeToClient(clients.get(i), "Your turn");
+//					String move = waitForClientReply(clients.get(i));
+//					broadcastToClients("Info:"+move);
+//				}
 			}
 			
 		}
 
+	}
+	
+	//called to start the game
+	void startGame() {
+
+		broadcastToClients("Begin game");//broadcasts to all clients, will move them from the lobby to the game
+		
+		//player list is now locked in stone
+		LinkedList<String> playerNames = new LinkedList<String>();//create list of player names
+		for(Client client:clients) playerNames.add(client.name);
+		
+		game = new UnoGame(playerNames);//pass the list of names to the game to initialize it
+		
+		game.init();//deals cards, sets up game
+		
+	}
+		
+	void gameTurn() {
+		
+		UnoGameInfo gameInfo = game.getGameInfo();//get current game state
+		
+		broadcastToClients("Info:"+gameInfo.toString());//send current state to all clients
+		
+		Client turntaker = null;
+		
+		for(Client client:clients) {//check each player for player whose turn it is
+			if(client.name.equals(gameInfo.currentPlayer)) {//find correct player
+				turntaker = client;
+				break;
+			}
+		}
+		
+		writeToClient(turntaker, "Your turn");
+		String move = waitForClientReply(turntaker);
+		game.tick(move);
+		
 	}
 	
 	//attempts to start the host server

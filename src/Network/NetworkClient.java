@@ -15,6 +15,7 @@ public class NetworkClient extends Thread{
 	Socket socket;
 	String state;
 	Main GUI;
+	String name;
 	
 	@Override
 	public void run(){// called from Thread.start()
@@ -57,6 +58,7 @@ public class NetworkClient extends Thread{
 			}
 			//else message.equals("Welcome"), and we're in
 			state = "Running";
+			this.name = name;
 			this.start();//starts reading messages from the server
 			
 			return "Success";
@@ -92,6 +94,7 @@ public class NetworkClient extends Thread{
 						GUI.goToGame();
 					}
 					else if(message.startsWith("Info:")) {
+						
 						GUI.updateGameInfo(message.substring(message.indexOf(":")+1));
 					}
 					else if(message.equals("Your turn")) {

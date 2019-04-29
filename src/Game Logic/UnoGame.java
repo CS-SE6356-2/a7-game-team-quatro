@@ -95,6 +95,9 @@ public class UnoGame
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 			}
+			else {
+				this.turnOrder.goToNextPlayer();
+			}
 			
 			/* If the next player has no cards that match, they are dealt cards until they do */
 			while (!this.turnOrder.getCurrentPlayer().hasMatchInHand(this.discardPile.peekAtTopCard()))
@@ -127,6 +130,8 @@ public class UnoGame
 		gameInfo.discardPileTopCard = this.discardPile.peekAtTopCard();
 		for (int i = 0; i < this.players.size(); ++i)
 		{
+			gameInfo.playerNames.add(this.players.get(i).getName());
+			gameInfo.playerCards.add(new LinkedList<UnoCard>());
 			for (int j = 0; j < this.players.get(i).numberOfCards(); ++j)
 			{
 				gameInfo.playerCards.get(i).addLast(this.players.get(i).peekAtCard(j));

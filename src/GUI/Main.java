@@ -1,11 +1,14 @@
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -52,6 +55,7 @@ public class Main extends Application implements Runnable {
 	private Button joinServer;//on main menu, moves to joining server screen
 	private Button connectToServer;//on joining screen, attempts to connect to server
 	
+	private ComboBox<String> cardList;
 	private Button endTurn;
 	
 	private Button menu;//on joining and hosting screen, goes to main menu
@@ -83,6 +87,8 @@ public class Main extends Application implements Runnable {
         networkInfo = new Text();
         nameField = new TextField();
         addressField = new TextField();
+        
+        cardList = new ComboBox<String>();
         
         hostServer = new Button("Host Game");
         hostServer.setOnAction(new EventHandler<ActionEvent>() {
@@ -277,7 +283,7 @@ public class Main extends Application implements Runnable {
     
     private void endTurn() {
     	menuRoot.getChildren().remove(endTurn);
-    	clientThread.respondWithTurnInfo(name+" played");
+    	clientThread.respondWithTurnInfo(cardList.getValue());
     }
     
     public void updatePlayerList(String names) {
@@ -290,12 +296,29 @@ public class Main extends Application implements Runnable {
     	
     	screenInfo.setText("Uno");
     	networkInfo.setText("");
-    	menuRoot.getChildren().addAll(screenInfo, networkInfo);
+    	menuRoot.getChildren().addAll(screenInfo, networkInfo, cardList);
     	root.getChildren().addAll(menuRoot);
     }
     
     public void updateGameInfo(String info) {
-    	networkInfo.setText(info);
+    	
+    	String[] data = info.split("\n");
+		String topcard = "Current pile: "+data[0];
+		String cards = "";
+		String others = "";
+		
+		for(int i = 2;i<data.length;i+=2) {
+			if(data[i].equals(name)) {
+				cards = data[i+1];
+			}
+			else {
+				others += data[i]+" has "+data[i+1].split(",").length+" cards\n";
+			}
+		}
+		
+    	networkInfo.setText(topcard+"\n"+others);
+    	ObservableList<String> options = FXCollections.observableArrayList(cards.split(","));
+    	cardList.setItems(options);
     }
     
     public void takeTurn() {
@@ -383,7 +406,7 @@ public class Main extends Application implements Runnable {
     @Override
     public void start(Stage primaryStage) throws Exception {
         window = primaryStage;
-        primaryStage.setTitle("Generic Card Game Engine");
+        primaryStage.setTitle("Uno Game - Team 4");
 
         root = new StackPane();
         canvas = new Canvas(WIDTH, HEIGHT);
