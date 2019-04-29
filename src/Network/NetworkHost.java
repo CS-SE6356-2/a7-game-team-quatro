@@ -52,6 +52,8 @@ public class NetworkHost extends Thread{
 //				}
 			}
 			
+			
+			
 		}
 
 	}
@@ -88,8 +90,20 @@ public class NetworkHost extends Thread{
 		
 		writeToClient(turntaker, "Your turn");
 		String move = waitForClientReply(turntaker);
+		//System.out.println(turntaker.name+" played "+move);
+		
 		game.tick(move);
 		
+		String winner = game.checkForWinCondition();
+		if(winner != null) {
+			gameOver(winner);
+		}
+	}
+	
+	void gameOver(String winner) {
+		state = "Over";
+		broadcastToClients("Game over:"+winner);
+		shutdown();
 	}
 	
 	//attempts to start the host server

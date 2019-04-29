@@ -83,25 +83,53 @@ public class NetworkClient extends Thread{
 	
 	//will be called when a message is received from the server
 	void messageFromServer_Handler(String message) {
-		Platform.runLater(new Runnable() {
-			   @Override
-			   public void run() {
-				   if(message.startsWith("Player list:")) {
-						GUI.updatePlayerList(message.substring(message.indexOf(":")+1));
-						//tell GUI the player list
-					}
-					else if(message.equals("Begin game")) {
-						GUI.goToGame();
-					}
-					else if(message.startsWith("Info:")) {
-						
-						GUI.updateGameInfo(message.substring(message.indexOf(":")+1));
-					}
-					else if(message.equals("Your turn")) {
-						GUI.takeTurn();
-					}
-			   }
-			});
+		
+		if(message.startsWith("Player list:")) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					GUI.updatePlayerList(message.substring(message.indexOf(":")+1));
+					//tell GUI the player list
+				}
+				});
+		}
+		
+		else if(message.equals("Begin game")) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					GUI.goToGame();
+				}
+				});
+		}
+		
+		else if(message.startsWith("Info:")) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					GUI.updateGameInfo(message.substring(message.indexOf(":")+1));
+				}
+				});
+		}
+		
+		else if(message.equals("Your turn")) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					GUI.takeTurn();
+				}
+				});
+		}
+		
+		else if(message.startsWith("Game over:")) {
+			shutdown();
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					GUI.endGame(message.substring(message.indexOf(":")+1));   
+				}
+				});
+		}
 		
 	}
 	

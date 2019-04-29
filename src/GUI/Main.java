@@ -325,6 +325,16 @@ public class Main extends Application implements Runnable {
     	menuRoot.getChildren().add(endTurn);
     }
     
+    public void endGame(String winner) {
+    	root.getChildren().clear();
+    	menuRoot.getChildren().clear();
+    	
+    	screenInfo.setText("Game Over");
+    	networkInfo.setText(winner+ " won!");
+    	menuRoot.getChildren().addAll(screenInfo, networkInfo, menu);
+    	root.getChildren().addAll(menuRoot);
+    }
+    
     
     public void disconnected() {
     	
