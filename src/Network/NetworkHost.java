@@ -89,10 +89,12 @@ public class NetworkHost extends Thread{
 		}
 		
 		writeToClient(turntaker, "Your turn");
-		String move = waitForClientReply(turntaker);
+		String[] turn = waitForClientReply(turntaker).split(",");
+		String move = turn[0];
+		boolean calledUno = turn[1].equals("true");
 		//System.out.println(turntaker.name+" played "+move);
 		
-		game.tick(move);
+		game.tick(move, calledUno);
 		
 		String winner = game.checkForWinCondition();
 		if(winner != null) {

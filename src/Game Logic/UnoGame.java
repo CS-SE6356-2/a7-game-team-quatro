@@ -55,7 +55,7 @@ public class UnoGame
 	
 	/* Progress the game by one move using the given input.
 	 * Returns true if the game successfully progressed */
-	public boolean tick(String input)
+	public boolean tick(String input, boolean calledUno)
 	{	
 		String result = this.takeTurn(input);
 		if (result == "ERROR")
@@ -64,6 +64,12 @@ public class UnoGame
 		}
 		else
 		{
+			
+			if(this.turnOrder.getCurrentPlayer().numberOfCards() == 1 && !calledUno) {//if the player failed to call UNO when down to one card
+				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
+				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
+			}
+			
 			/* If a skip card was played, the next player's turn is skipped */
 			if (result.equals("skip"))
 			{

@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
@@ -56,6 +57,7 @@ public class Main extends Application implements Runnable {
 	private Button connectToServer;//on joining screen, attempts to connect to server
 	
 	private ComboBox<String> cardList;
+	private CheckBox calledUno;
 	private Button endTurn;
 	
 	private Button menu;//on joining and hosting screen, goes to main menu
@@ -89,6 +91,10 @@ public class Main extends Application implements Runnable {
         addressField = new TextField();
         
         cardList = new ComboBox<String>();
+        
+        calledUno = new CheckBox();
+        calledUno.setText("Call UNO");
+        calledUno.setSelected(false);
         
         hostServer = new Button("Host Game");
         hostServer.setOnAction(new EventHandler<ActionEvent>() {
@@ -283,7 +289,8 @@ public class Main extends Application implements Runnable {
     
     private void endTurn() {
     	menuRoot.getChildren().remove(endTurn);
-    	clientThread.respondWithTurnInfo(cardList.getValue());
+    	menuRoot.getChildren().remove(calledUno);
+    	clientThread.respondWithTurnInfo(cardList.getValue()+","+calledUno.isSelected());
     }
     
     public void updatePlayerList(String names) {
@@ -322,7 +329,8 @@ public class Main extends Application implements Runnable {
     }
     
     public void takeTurn() {
-    	menuRoot.getChildren().add(endTurn);
+    	calledUno.setSelected(false);
+    	menuRoot.getChildren().addAll(endTurn, calledUno);
     }
     
     public void endGame(String winner) {
