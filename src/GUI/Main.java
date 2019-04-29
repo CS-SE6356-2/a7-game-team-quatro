@@ -56,6 +56,7 @@ public class Main extends Application implements Runnable {
 	private Button joinServer;//on main menu, moves to joining server screen
 	private Button connectToServer;//on joining screen, attempts to connect to server
 	
+	private ComboBox<String> colorList;
 	private ComboBox<String> cardList;
 	private CheckBox calledUno;
 	private Button endTurn;
@@ -90,7 +91,27 @@ public class Main extends Application implements Runnable {
         nameField = new TextField();
         addressField = new TextField();
         
+        ObservableList<String> colors = FXCollections.observableArrayList("blue","green","red","yellow");
+        colorList = new ComboBox<String>(colors);
+        colorList.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+					setWildColor();
+			}
+		});
+        
         cardList = new ComboBox<String>();
+        cardList.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if(cardList.getValue() == null) return;
+				
+				if(cardList.getValue().contains("wild") && !menuRoot.getChildren().contains(colorList))
+					menuRoot.getChildren().add(3, colorList);
+				else if(!cardList.getValue().contains("wild") && menuRoot.getChildren().contains(colorList))
+					menuRoot.getChildren().remove(colorList);
+			}
+		});
         
         calledUno = new CheckBox();
         calledUno.setText("Call UNO");
@@ -343,6 +364,10 @@ public class Main extends Application implements Runnable {
     	root.getChildren().addAll(menuRoot);
     }
     
+    public void setWildColor() {
+    	String currentCard = cardList.getValue();
+    	cardList.getItems().set(cardList.getItems().indexOf(currentCard), colorList.getValue() +currentCard.substring(currentCard.indexOf(" ")));
+    }
     
     public void disconnected() {
     	
