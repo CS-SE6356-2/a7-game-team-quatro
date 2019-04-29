@@ -48,12 +48,13 @@ public class UnoPlayer
 		/* Handle wild cards */
 		String cardType = card.getType();
 		String cardColor = "";
+		boolean isWild = cardType.equals("wild") || cardType.equals("wild4");
 		
-		if (cardType == "wild" || cardType == "wild4")
+		if (isWild)
 		{
 			/* Get the color the player wants the wildcard to act as */
 			cardColor = card.getColor();
-			card = new UnoCard(card.getType(), "wild");
+			card = new UnoCard("blue", cardType);
 		}
 		
 		/* Verify that the card can be legally played */
@@ -66,17 +67,17 @@ public class UnoPlayer
 				/* Card isn't in the player's hand */
 				return false;
 			}
-			/* Card being played is a non wildcard */
-			if (cardColor == "")
+			/* Card being played is a wildcard */
+			if (isWild)
 			{
 				this.hand.playCard(cardIndex);
-				discardPile.addCardToTop(card);
+				discardPile.addWildcardToTop(card, cardColor);
 				return true;
 			}
 			else
 			{
 				this.hand.playCard(cardIndex);
-				discardPile.addWildcardToTop(card, cardColor);
+				discardPile.addCardToTop(card);
 				return true;
 			}
 		}

@@ -19,7 +19,7 @@ public class UnoCard
 	
 	public static final ArrayList<String> cardColors
 		= new ArrayList<>(
-				Arrays.asList("green", "red", "yellow", "blue", "wild"));
+				Arrays.asList("green", "red", "yellow", "blue"));
 	
 	/* Constructors */
 	public UnoCard(String cType, String cColor)
@@ -54,13 +54,13 @@ public class UnoCard
 	}
 			
 	/* Compares with another card to see if they match. Matching means
-	 * that one card can be put on top of another in the discard pile. */
+	 * that this card can be played on top of the other card in the discard pile. */
 	public boolean matches(UnoCard otherCard)
 	{
 		/* Anything matches with a wild card.
 		 * Otherwise, cards match if color or type are the same. */
-		return this.getColor().equals("wild") 
-		    || otherCard.getColor().equals("wild" )
+		return this.getType().equals("wild") 
+		    || this.getType().equals("wild4" )
 		    || this.getColor().equals(otherCard.getColor())
 		    || this.getType().equals(otherCard.getType());
 	}

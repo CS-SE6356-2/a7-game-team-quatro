@@ -93,6 +93,7 @@ public class Main extends Application implements Runnable {
         
         ObservableList<String> colors = FXCollections.observableArrayList("blue","green","red","yellow");
         colorList = new ComboBox<String>(colors);
+        colorList.setValue(colors.get(0));
         colorList.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -366,7 +367,12 @@ public class Main extends Application implements Runnable {
     
     public void setWildColor() {
     	String currentCard = cardList.getValue();
-    	cardList.getItems().set(cardList.getItems().indexOf(currentCard), colorList.getValue() +currentCard.substring(currentCard.indexOf(" ")));
+    	System.out.println("Current card is "+currentCard);
+    	String type = currentCard.substring(currentCard.indexOf(" ")+1);
+    	System.out.println("type = "+type);
+    	String newCard = colorList.getValue() +" "+ type;
+    	cardList.getItems().set(cardList.getItems().indexOf(currentCard), newCard);
+    	cardList.setValue(newCard);
     }
     
     public void disconnected() {
