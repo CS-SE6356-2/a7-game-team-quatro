@@ -15,7 +15,7 @@ public class UnoCard
 	public static final ArrayList<String> cardTypes
 		= new ArrayList<>(
 				Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-							  "skip, reverse, draw2", "wild", "wild4"));
+							  "skip", "reverse", "draw2", "wild", "wild4"));
 	
 	public static final ArrayList<String> cardColors
 		= new ArrayList<>(
