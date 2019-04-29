@@ -32,7 +32,13 @@ public class UnoHand
 
 	public int indexOf(UnoCard card)
 	{
-		return this.cards.indexOf(card);
+		for(int i = 0; i < this.cards.size(); i++) {//iterate over each index
+			if(this.cards.get(i).getColor().equals(card.getColor()) && this.cards.get(i).getType().equals(card.getType())) {//if the index contains that card
+				return i;
+			}
+		}
+		
+		return -1;//otherwise not found
 	}
 
 	public UnoCard playCard(int index)
