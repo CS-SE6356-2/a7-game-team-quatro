@@ -30,7 +30,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.WindowEvent;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
-
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 import javafx.collections.FXCollections;
@@ -96,6 +96,19 @@ public class GUI extends Application{
         screenInfo = new Text();
         networkInfo = new Text();
         nameField = new TextField();
+        nameField.setOnKeyTyped(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent arg0) {
+				String allowed = "";
+				for(int i = 0; i < nameField.getText().length();i++) {
+					char c = nameField.getText().charAt(i);
+					if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) allowed += c;
+				}
+				nameField.setText(allowed);
+				nameField.positionCaret(allowed.length());
+			}
+        });
+        
         addressField = new TextField();
 
         hostServer = new Button("Host Game");
