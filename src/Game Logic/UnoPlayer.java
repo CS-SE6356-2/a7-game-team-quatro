@@ -54,7 +54,7 @@ public class UnoPlayer
 		{
 			/* Get the color the player wants the wildcard to act as */
 			cardColor = card.getColor();
-			card = new UnoCard("blue", cardType);
+			card = new UnoCard(cardType, "blue");
 		}
 		
 		/* Verify that the card can be legally played */

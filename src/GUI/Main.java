@@ -107,10 +107,19 @@ public class Main extends Application implements Runnable {
 			public void handle(ActionEvent event) {
 				if(cardList.getValue() == null) return;
 				
-				if(cardList.getValue().contains("wild") && !menuRoot.getChildren().contains(colorList))
+				if(cardList.getValue().contains("wild") && !menuRoot.getChildren().contains(colorList)) {//add color picker
 					menuRoot.getChildren().add(3, colorList);
-				else if(!cardList.getValue().contains("wild") && menuRoot.getChildren().contains(colorList))
+					colorList.setValue(colorList.getItems().get(0));
+					//setWildColor();
+				}
+				else if(cardList.getValue().contains("wild") && menuRoot.getChildren().contains(colorList)){
+					String color = cardList.getValue().substring(0, cardList.getValue().indexOf(" "));
+					int colorIndex = color.equals("blue")?0:color.equals("green")?1:color.equals("red")?2:3;
+					colorList.setValue(colorList.getItems().get(colorIndex));
+				}
+				else if(!cardList.getValue().contains("wild") && menuRoot.getChildren().contains(colorList)) {//remove color picker
 					menuRoot.getChildren().remove(colorList);
+				}
 			}
 		});
         
@@ -367,9 +376,11 @@ public class Main extends Application implements Runnable {
     
     public void setWildColor() {
     	String currentCard = cardList.getValue();
-    	System.out.println("Current card is "+currentCard);
+    	//System.out.println("Current card is "+currentCard);
+    	String color = currentCard.substring(0, cardList.getValue().indexOf(" "));
+    	if(color.equals(colorList.getValue())) return;
     	String type = currentCard.substring(currentCard.indexOf(" ")+1);
-    	System.out.println("type = "+type);
+    	//System.out.println("type = "+type);
     	String newCard = colorList.getValue() +" "+ type;
     	cardList.getItems().set(cardList.getItems().indexOf(currentCard), newCard);
     	cardList.setValue(newCard);
