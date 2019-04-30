@@ -294,6 +294,7 @@ public class GUI extends Application{
 
     public void takeTurn() {
         enableAction();
+        setMessage("It is your turn");
     }
 
     public void disconnected() {
@@ -417,7 +418,8 @@ public class GUI extends Application{
         ObservableList<String> names = FXCollections.observableArrayList(
                 "RED","YELLOW","GREEN","BLUE");
         ComboBox<String> colorList = new ComboBox<String>(names);
-
+        colorList.setValue(names.get(0));
+        
         center.getChildren().addAll(
             networkInfo, discardText, discardView, play, playText,wildCardText,colorList);
 
@@ -435,10 +437,12 @@ public class GUI extends Application{
                             UnoCard other = discardView.getCard();
                             if(other != null){
                             	
+                            	
+                            	
                             	 String color;
                             	 
                             	 if(selected.getType().equals("wild") || selected.getType().equals("wild4")){
-                                     color = colorList.getValue();
+                                     color = colorList.getValue().toLowerCase();
                                      if(color == null){
                                          playText.setText("Warning: Select Wildcard Color");
                                      }
@@ -447,8 +451,10 @@ public class GUI extends Application{
                             		 color = selected.getColor();
                             	}
                             	
+                            	System.out.println("Playing "+color +" "+ selected.getType()+ " on "+other.getColor()+" "+other.getType());
+                            	 
                                 if(selected.matches(other)){
-                                    String text = selected.getColor() +" "+ selected.getType()+",false";
+                                    String text = color +" "+ selected.getType()+",false";
                                     disableAction();
                                     playText.setText("");
                                     clientThread.respondWithTurnInfo(text);
@@ -505,7 +511,13 @@ public class GUI extends Application{
         //add cards which can be selected
         ArrayList<CardView> list = new ArrayList<CardView>();
         for(int i = 0; i<tokens.length; i+=2){
-            CardView newCard = new CardView(tokens[i+1],tokens[i],list);
+        	CardView newCard;
+        	if(tokens[i+1].equals("wild") || tokens[i+1].equals("wild4")) {
+        		newCard = new CardView(tokens[i+1],"wild",list);
+        	}
+        	else {
+        		newCard = new CardView(tokens[i+1],tokens[i],list);
+        	}
             newCard.addEventFilter(MouseEvent.MOUSE_PRESSED,newCard);
             handPane.getChildren().addAll(newCard);
             cardRef = newCard;

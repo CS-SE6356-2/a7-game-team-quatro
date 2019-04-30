@@ -14,7 +14,7 @@ public class CardImageLoader extends ImageLoader {
         try {
             return ImageLoader.loadImageFromFileSystem(imagePath);
         } catch (FileNotFoundException fnfe) {
-            System.out.print("File not found");
+            System.out.println("File not found: "+imagePath);
             return null;
         }
     }

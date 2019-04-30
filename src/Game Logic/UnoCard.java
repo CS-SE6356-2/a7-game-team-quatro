@@ -19,7 +19,7 @@ public class UnoCard
 	
 	public static final ArrayList<String> cardColors
 		= new ArrayList<>(
-				Arrays.asList("green", "red", "yellow", "blue"));
+				Arrays.asList("green", "red", "yellow", "blue", "wild"));
 	
 	/* Constructors */
 	public UnoCard(String cType, String cColor)

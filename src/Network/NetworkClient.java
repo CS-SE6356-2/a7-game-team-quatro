@@ -112,6 +112,15 @@ public class NetworkClient extends Thread{
 				});
 		}
 		
+		else if(message.startsWith("Alert:")) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					GUI.setMessage(message.substring(message.indexOf(":")+1));
+				}
+				});
+		}
+		
 		else if(message.equals("Your turn")) {
 			Platform.runLater(new Runnable() {
 				@Override

@@ -30,8 +30,8 @@ public class UnoDeck
 		/* 4 of each kind of wild card */
 		for (int counter = 1; counter <= 4; ++counter)
 		{
-			this.cards.add(new UnoCard("wild", "blue"));
-			this.cards.add(new UnoCard("wild4", "blue"));
+			this.cards.add(new UnoCard("wild", "wild"));
+			this.cards.add(new UnoCard("wild4", "wild"));
 		}
 	}
 
