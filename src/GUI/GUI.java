@@ -293,7 +293,7 @@ public class GUI extends Application{
     }
 
     public void takeTurn() {
-        menuRoot.getChildren().add(endTurn);
+        enableAction();
     }
 
     public void disconnected() {
@@ -410,7 +410,7 @@ public class GUI extends Application{
         center.setAlignment(Pos.CENTER);
         networkInfo = new Text("Your message here");
         Text discardText = new Text("Discard Pile");
-        discardView = new CardView("wild","wild");
+        discardView = new CardView("wild","blue");
         play = new Button("Play Selected Card");
         Text playText = new Text("");
         Text wildCardText = new Text("Set Wildcard color");
@@ -434,30 +434,30 @@ public class GUI extends Application{
                         if(selected != null){
                             UnoCard other = discardView.getCard();
                             if(other != null){
-                                if(selected.getColor().equals("Wild")){
-                                    String color = colorList.getValue();
-                                    if(color != null){
-                                        String text = "Wild" + " " + color;
-                                        //clientThread.writeToServer(text);
-                                        disableAction();
-                                        playText.setText("");
-                                    }
-                                    else{
-                                        playText.setText("Warning: Select Wildcard Color");
-                                    }
+                            	
+                            	 String color;
+                            	 
+                            	 if(selected.getType().equals("wild") || selected.getType().equals("wild4")){
+                                     color = colorList.getValue();
+                                     if(color == null){
+                                         playText.setText("Warning: Select Wildcard Color");
+                                     }
+                            	}
+                            	else {
+                            		 color = selected.getColor();
+                            	}
+                            	
+                                if(selected.matches(other)){
+                                    String text = selected.getColor() +" "+ selected.getType()+",false";
+                                    disableAction();
+                                    playText.setText("");
+                                    clientThread.respondWithTurnInfo(text);
                                 }
                                 else{
-                                    if(other.matches(selected)){
-                                        String text = selected.getType() + " " + selected.getColor();
-                                        //clientThread.writeToServer(text);
-                                        disableAction();
-                                        playText.setText("");
-                                    }
-                                    else{
-                                        //card does not match
-                                        playText.setText("Warning: Card Does Not Match");
-                                    }
+                                    //card does not match
+                                    playText.setText("Warning: Card Does Not Match");
                                 }
+                                
                             }
                             else{
                                 //discarded card is null
@@ -564,6 +564,7 @@ public class GUI extends Application{
     	
     	String[] data = info.split("\n");
 		String topcard = data[0];
+		String currentPlayer = "It is "+data[1]+"'s turn";
 		String cards = "";
 		String others = "";
 		
@@ -577,6 +578,7 @@ public class GUI extends Application{
 		}
 		
 		setDiscardCard(topcard);
+		setMessage(currentPlayer);
 		setHand(cards);
 		setNumCardsInPlayerHands(others);
 		

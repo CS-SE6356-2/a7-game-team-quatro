@@ -57,6 +57,7 @@ public class CardView extends ImageView implements EventHandler<MouseEvent>{
                 card = list.get(i);
             }
         }
+        if(card == null) return null;
         return card.getCard();
     }
 
