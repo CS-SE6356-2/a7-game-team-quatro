@@ -14,7 +14,7 @@ public class NetworkClient extends Thread{
 
 	Socket socket;
 	String state;
-	Main GUI;
+	GUI GUI;
 	String name;
 	
 	@Override

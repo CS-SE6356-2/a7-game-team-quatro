@@ -282,13 +282,14 @@ public class GUI extends Application{
     }
 
     public void goToGame() {
-        root.getChildren().clear();
-        menuRoot.getChildren().clear();
-
-        screenInfo.setText("Uno");
-        networkInfo.setText("");
-        menuRoot.getChildren().addAll(screenInfo, networkInfo);
-        root.getChildren().addAll(menuRoot);
+    	playGame();
+//        root.getChildren().clear();
+//        menuRoot.getChildren().clear();
+//
+//        screenInfo.setText("Uno");
+//        networkInfo.setText("");
+//        menuRoot.getChildren().addAll(screenInfo, networkInfo);
+//        root.getChildren().addAll(menuRoot);
     }
 
     public void takeTurn() {
@@ -300,7 +301,7 @@ public class GUI extends Application{
         networkInfo.setText("Disconnected by server");
         menuRoot.getChildren().add(networkInfo);
     }
-
+    
     //works for both lobby etc. and game
     public void setMessage(String info) {
         networkInfo.setText(info);
@@ -504,7 +505,7 @@ public class GUI extends Application{
         //add cards which can be selected
         ArrayList<CardView> list = new ArrayList<CardView>();
         for(int i = 0; i<tokens.length; i+=2){
-            CardView newCard = new CardView(tokens[i],tokens[i+1],list);
+            CardView newCard = new CardView(tokens[i+1],tokens[i],list);
             newCard.addEventFilter(MouseEvent.MOUSE_PRESSED,newCard);
             handPane.getChildren().addAll(newCard);
             cardRef = newCard;
@@ -545,18 +546,44 @@ public class GUI extends Application{
     public void setDiscardCard(String card)
     {
         String[] tokens = card.split(" ");
-        CardView discard = new CardView(tokens[0],tokens[1]);
+        CardView discard = new CardView(tokens[1],tokens[0]);
         discardView.setImage(discard.getImage());
         discardView.setCard(discard.getCard());
     }
 
     public void endGame(String winner){
-        if(name==winner){
-            networkInfo.setText("YOU LOSE!");
+        if(name.equals(winner)){
+            networkInfo.setText("YOU LOSE!\n"+winner+" WON!");
         }
         else{
             networkInfo.setText("YOU WIN!");
         }
+    }
+    
+    public void updateGameInfo(String info) {
+    	
+    	String[] data = info.split("\n");
+		String topcard = data[0];
+		String cards = "";
+		String others = "";
+		
+		for(int i = 2;i<data.length;i+=2) {
+			if(data[i].equals(name)) {
+				cards = data[i+1].replaceAll(",", " ");
+			}
+			else {
+				others += data[i]+" "+(data[i+1].split(",").length)+" ";
+			}
+		}
+		
+		setDiscardCard(topcard);
+		setHand(cards);
+		setNumCardsInPlayerHands(others);
+		
+		
+    	//networkInfo.setText(topcard+"\n"+others);
+    	//ObservableList<String> options = FXCollections.observableArrayList(cards.split(","));
+    	//cardList.setItems(options);
     }
 
     @Override
@@ -570,17 +597,17 @@ public class GUI extends Application{
 
         //network GUI works
 
-        //setupNetwork();
-        //mainMenu();
+        setupNetwork();
+        mainMenu();
 
         //demo of GUI
-        namesArray = new String[]{"Bob","Jane","Zed","Dave"};
-        name = "Bob";
-        playGame();
-        setDiscardCard("3 blue");
-        setHand("4 red 3 yellow 5 yellow 5 yellow 5 yellow wild wild 5 yellow 5 yellow 5 yellow 5 yellow 5 yellow 5 yellow");
-        setNumCardsInPlayerHands("Bob 7 Jane 12 Zed 11 Dave 6");
-        enableAction();
+//        namesArray = new String[]{"Bob","Jane","Zed","Dave"};
+//        name = "Bob";
+//        playGame();
+//        setDiscardCard("3 blue");
+//        setHand("4 red 3 yellow 5 yellow 5 yellow 5 yellow wild wild 5 yellow 5 yellow 5 yellow 5 yellow 5 yellow 5 yellow");
+//        setNumCardsInPlayerHands("Bob 7 Jane 12 Zed 11 Dave 6");
+//        enableAction();
 
     }
 
@@ -588,5 +615,10 @@ public class GUI extends Application{
     public void stop() {
         Platform.exit();
         System.exit(0);
+    }
+    
+    
+    public static void main(String[] args) {
+        launch(args);
     }
 }
