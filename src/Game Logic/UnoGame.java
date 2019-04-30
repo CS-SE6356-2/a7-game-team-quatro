@@ -55,17 +55,19 @@ public class UnoGame
 	
 	/* Progress the game by one move using the given input.
 	 * Returns true if the game successfully progressed */
-	public boolean tick(String input, boolean calledUno)
+	public String tick(String input, boolean calledUno)
 	{	
 		String result = this.takeTurn(input);
 		if (result == "ERROR")
 		{
-			return false;
+			return this.turnOrder.getCurrentPlayer().getName()+":Invalid move";
 		}
 		else
 		{
+			String message = "";
 			
 			if(this.turnOrder.getCurrentPlayer().numberOfCards() == 1 && !calledUno) {//if the player failed to call UNO when down to one card
+				message += this.turnOrder.getCurrentPlayer().getName()+":Failed to call UNO\n";
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 			}
@@ -74,6 +76,7 @@ public class UnoGame
 			if (result.equals("skip"))
 			{
 				this.turnOrder.goToNextPlayer();
+				message += this.turnOrder.getCurrentPlayer().getName()+":You got skipped\n";
 				this.turnOrder.goToNextPlayer();
 			}
 			
@@ -88,6 +91,7 @@ public class UnoGame
 			else if (result.equals("draw2"))
 			{
 				this.turnOrder.goToNextPlayer();
+				message += this.turnOrder.getCurrentPlayer().getName()+":You had to draw two cards\n";
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 				this.turnOrder.goToNextPlayer();
@@ -97,6 +101,7 @@ public class UnoGame
 			else if (result.equals("wild4"))
 			{
 				this.turnOrder.goToNextPlayer();
+				message += this.turnOrder.getCurrentPlayer().getName()+":You had to draw four cards\n";
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
 				this.dealer.dealCardToPlayer(this.deck, this.discardPile, turnOrder.getCurrentPlayer());
@@ -108,12 +113,16 @@ public class UnoGame
 			}
 			
 			/* If the next player has no cards that match, they are dealt cards until they do */
+			boolean hadToDraw = false;
 			while (!this.turnOrder.getCurrentPlayer().hasMatchInHand(this.discardPile.peekAtTopCard()))
 			{
-					dealer.dealCardToPlayer(this.deck, this.discardPile, this.turnOrder.getCurrentPlayer());
+				hadToDraw = true;
+				dealer.dealCardToPlayer(this.deck, this.discardPile, this.turnOrder.getCurrentPlayer());
 			}
+			if(hadToDraw) message += this.turnOrder.getCurrentPlayer().getName()+":You had no cards that could play, you drew from the deck\n";
 			
-			return true;
+			if(message.isEmpty()) return null;
+			return message;
 		}
 	}
 	

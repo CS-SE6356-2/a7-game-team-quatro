@@ -22,6 +22,7 @@ public class NetworkHost extends Thread{
 	ServerSocket serverSocket;
 	String state;
 	
+	String lastMessage;
 	
 	public NetworkHost() {
 		clients = new ClientList();
@@ -89,12 +90,26 @@ public class NetworkHost extends Thread{
 		}
 		
 		writeToClient(turntaker, "Your turn");
+		
+		if(lastMessage != null) {
+			String[] messages = lastMessage.split("\n");
+			for(String message:messages) {
+				String[] data = message.split(":");
+				for(Client client:clients) {
+					if(client.name.equals(data[0])) {
+						writeToClient(client, "Alert:"+data[1]);
+					}
+				}
+			}
+		}
+		
+		
 		String[] turn = waitForClientReply(turntaker).split(",");
 		String move = turn[0];
 		boolean calledUno = turn[1].equals("true");
-		System.out.println(turntaker.name+" played "+move);
+		//System.out.println(turntaker.name+" played "+move);
 		
-		game.tick(move, calledUno);
+		lastMessage = game.tick(move, calledUno);
 		
 		String winner = game.checkForWinCondition();
 		if(winner != null) {

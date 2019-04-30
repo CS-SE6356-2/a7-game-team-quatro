@@ -108,6 +108,7 @@ public class NetworkClient extends Thread{
 				@Override
 				public void run() {
 					GUI.updateGameInfo(message.substring(message.indexOf(":")+1));
+					GUI.setAlert("");
 				}
 				});
 		}
@@ -116,7 +117,7 @@ public class NetworkClient extends Thread{
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					GUI.setMessage(message.substring(message.indexOf(":")+1));
+					GUI.setAlert(message.substring(message.indexOf(":")+1));
 				}
 				});
 		}

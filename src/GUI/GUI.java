@@ -17,6 +17,7 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
@@ -40,11 +41,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class GUI extends Application{
-    public final static int NETWORKWIDTH = 600; // window width
-    public final static int NETWORKHEIGHT = 600;  // window height
+    public final static int NETWORKWIDTH = 800; // window width
+    public final static int NETWORKHEIGHT = 800;  // window height
 
     public final static int PLAYWIDTH = 800; // window width
-    public final static int PLAYHEIGHT = 600;  // window height
+    public final static int PLAYHEIGHT = 800;  // window height
 
     private NetworkHost hostThread;
     private NetworkClient clientThread;
@@ -61,6 +62,7 @@ public class GUI extends Application{
     //Added to interact with network
     private Text screenInfo;//labels current screen
     private Text networkInfo;//contains info from client thread
+    private Text alertInfo;//contains alerts from client thread
     private TextField nameField;//to input the player's name
     private TextField addressField;//to input the server address
 
@@ -70,7 +72,9 @@ public class GUI extends Application{
 
     private Button joinServer;//on main menu, moves to joining server screen
     private Button connectToServer;//on joining screen, attempts to connect to server
-
+    
+    private CheckBox callingUno;//if checked, signifies that the player is saying UNO when playing a card
+    
     private Button endTurn;
 
     private Button menu;//on joining and hosting screen, goes to main menu
@@ -294,6 +298,7 @@ public class GUI extends Application{
 
     public void takeTurn() {
         enableAction();
+        callingUno.setSelected(false);
         setMessage("It is your turn");
     }
 
@@ -306,6 +311,10 @@ public class GUI extends Application{
     //works for both lobby etc. and game
     public void setMessage(String info) {
         networkInfo.setText(info);
+    }
+    
+    public void setAlert(String info) {
+    	alertInfo.setText(info);
     }
 
     //methods below should be called after playGame is called
@@ -410,6 +419,7 @@ public class GUI extends Application{
         VBox center = new VBox();
         center.setAlignment(Pos.CENTER);
         networkInfo = new Text("Your message here");
+        alertInfo = new Text("");
         Text discardText = new Text("Discard Pile");
         discardView = new CardView("wild","blue");
         play = new Button("Play Selected Card");
@@ -419,9 +429,9 @@ public class GUI extends Application{
                 "RED","YELLOW","GREEN","BLUE");
         ComboBox<String> colorList = new ComboBox<String>(names);
         colorList.setValue(names.get(0));
+        callingUno = new CheckBox("Call UNO");
         
-        center.getChildren().addAll(
-            networkInfo, discardText, discardView, play, playText,wildCardText,colorList);
+        center.getChildren().addAll(networkInfo, alertInfo, discardText, discardView, play, playText,wildCardText,colorList, callingUno);
 
         center.setSpacing(15);
 
@@ -451,11 +461,12 @@ public class GUI extends Application{
                             		 color = selected.getColor();
                             	}
                             	
-                            	System.out.println("Playing "+color +" "+ selected.getType()+ " on "+other.getColor()+" "+other.getType());
+                            	//System.out.println("Playing "+color +" "+ selected.getType()+ " on "+other.getColor()+" "+other.getType());
                             	 
                                 if(selected.matches(other)){
-                                    String text = color +" "+ selected.getType()+",false";
+                                    String text = color +" "+ selected.getType()+","+callingUno.isSelected();
                                     disableAction();
+                                    callingUno.setSelected(false);
                                     playText.setText("");
                                     clientThread.respondWithTurnInfo(text);
                                 }
@@ -565,10 +576,10 @@ public class GUI extends Application{
 
     public void endGame(String winner){
         if(name.equals(winner)){
-            networkInfo.setText("YOU LOSE!\n"+winner+" WON!");
+        	networkInfo.setText("YOU WIN!");
         }
         else{
-            networkInfo.setText("YOU WIN!");
+            networkInfo.setText("YOU LOSE!\n"+winner+" WON!");
         }
     }
     
