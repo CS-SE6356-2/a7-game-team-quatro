@@ -1,4 +1,5 @@
-# Team 3 - Card Game Engine
+# Team 4 - UNO
 ### Introduction
-  To compile, run javac GUI.java
-  To run, run java GUI 
+  To compile, run "javac GUI.java"
+
+  To run, run "java GUI" 
