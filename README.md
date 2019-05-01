@@ -1,5 +1,5 @@
 # Team 4 - UNO
-### Introduction
+### Instructions
   To compile, run "javac GUI.java"
 
   To run, run "java GUI" 
